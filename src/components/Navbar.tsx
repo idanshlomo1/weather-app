@@ -1,4 +1,5 @@
 "use client"
+
 import React from 'react'
 import { Button } from './ui/button'
 import { useRouter } from 'next/navigation'
@@ -8,6 +9,7 @@ import SearchDialog from './SearchDialog'
 
 const Navbar = () => {
     const router = useRouter()
+
     return (
         <div className='w-full py-4 flex items-center justify-between'>
             <div className="left">
