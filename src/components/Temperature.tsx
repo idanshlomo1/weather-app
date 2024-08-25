@@ -8,7 +8,8 @@ import React, { useEffect, useState } from 'react';
 const Temperature: React.FC = () => {
     const { forecast } = useGlobalContext();
 
-    if (!forecast || !forecast.weather) {
+    // Ensure the forecast and its required properties are available
+    if (!forecast || !forecast.main || !forecast.weather || forecast.weather.length === 0) {
         return <div>Loading...</div>;
     }
 
@@ -21,8 +22,9 @@ const Temperature: React.FC = () => {
     const [localTime, setLocalTime] = useState<string>("");
     const [currentDay, setCurrentDay] = useState<string>("");
 
-    const { main: weatherMain } = weather[0];
-    const description = weather[0].description;
+    // Safely handle the weather array
+    const weatherMain = weather[0]?.main || "Clear";
+    const description = weather[0]?.description || "clear sky";
 
     const getIcon = () => {
         switch (weatherMain) {
