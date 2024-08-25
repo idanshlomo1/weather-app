@@ -2,14 +2,16 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import axios from "axios";
-import { Forecast } from '@/lib/types';
+import { AirQuality, Forecast } from '@/lib/types';
 
 interface GlobalContextType {
     forecast: Forecast | null;
+    airQuality: AirQuality | null;  // You can specify a more precise type for air quality data if needed
 }
 
 interface GlobalContextUpdateType {
     fetchForecast: () => Promise<void>;
+    fetchAirQuality: () => Promise<void>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -17,6 +19,7 @@ const GlobalContextUpdate = createContext<GlobalContextUpdateType | undefined>(u
 
 export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [forecast, setForecast] = useState<Forecast | null>(null);
+    const [airQuality, setAirQuality] = useState<AirQuality | null>(null);
 
     const fetchForecast = async () => {
         try {
@@ -28,13 +31,24 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
         }
     };
 
+    const fetchAirQuality = async () => {
+        try {
+            const response = await axios.get("/api/pollution");
+            setAirQuality(response.data);
+            console.log("response: ", response.data);
+        } catch (error) {
+            console.log("Error fetching air quality data: ", error);
+        }
+    };
+
     useEffect(() => {
         fetchForecast();
+        fetchAirQuality();
     }, []);
 
     return (
-        <GlobalContext.Provider value={{ forecast }}>
-            <GlobalContextUpdate.Provider value={{ fetchForecast }}>
+        <GlobalContext.Provider value={{ forecast, airQuality }}>
+            <GlobalContextUpdate.Provider value={{ fetchForecast, fetchAirQuality }}>
                 {children}
             </GlobalContextUpdate.Provider>
         </GlobalContext.Provider>

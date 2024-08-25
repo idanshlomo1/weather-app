@@ -6,13 +6,13 @@ export async function GET(req: NextRequest) {
         const apikey = process.env.OPENWEATHERMAP_API_KEY
         const lat = 40.7128
         const lon = -74.006
-        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apikey}`
+        const url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apikey}`
 
         const response = await axios.get(url)
         return NextResponse.json(response.data)
 
     } catch (error) {
-        console.log("Error fetching forecast data")
-        return new Response("Error fetching forecast data", { status: 500 })
+        console.log("Error fetching pollution data")
+        return new Response("Error fetching pollution data", { status: 500 })
     }
 }

@@ -20,9 +20,9 @@ const Navbar = () => {
                 <div className="btn-group flex items-center gap-2">
 
                     <ModeToggle />
-                    <Button onClick={() => router.push("https//github.com")} className='source-code flex items-center gap-2'>
+                    {/* <Button onClick={() => router.push("https//github.com")} className='source-code flex items-center gap-2'>
                         <Github /> Source Code
-                    </Button>
+                    </Button> */}
                 </div>
             </div>
         </div>
