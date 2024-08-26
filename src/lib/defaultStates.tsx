@@ -1,4 +1,7 @@
-export const defaultStates = [
+import { Location } from "./types";
+
+// Example usage with defaultStates
+export const defaultStates: Location[] = [
     {
         name: "Madrid",
         country: "ES",
@@ -35,4 +38,3 @@ export const defaultStates = [
         lon: 2.1774322,
     },
 ];
-

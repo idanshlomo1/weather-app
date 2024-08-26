@@ -2,20 +2,28 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import axios from "axios";
-import { AirQuality, Forecast, FiveDayForecast, UVIndexForecast } from '@/lib/types';  // Added UVIndexForecast type
+import { AirQuality, Forecast, FiveDayForecast, UVIndexForecast, Coords } from '@/lib/types';  // Added UVIndexForecast type
+import { defaultStates } from "./defaultStates";
+import { debounce } from "lodash"
 
 interface GlobalContextType {
     forecast: Forecast | null;
     airQuality: AirQuality | null;
     fiveDayForecast: FiveDayForecast | null;
-    uvIndexForecast: UVIndexForecast | null;  // Added uvIndexForecast to GlobalContextType
+    uvIndexForecast: UVIndexForecast | null;
+    geoCodedList: typeof defaultStates;
+    inputValue: string;  // Added inputValue to GlobalContextType
+    handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;  
+
 }
 
 interface GlobalContextUpdateType {
-    fetchForecast: () => Promise<void>;
-    fetchAirQuality: () => Promise<void>;
-    fetchFiveDayForecast: () => Promise<void>;
-    fetchUVIndexForecast: () => Promise<void>;  // Added fetchUVIndexForecast
+    fetchForecast: (coords: Coords) => Promise<void>;  // Added Coords parameter
+    fetchAirQuality: (coords: Coords) => Promise<void>;
+    fetchFiveDayForecast: (coords: Coords) => Promise<void>;
+    fetchUVIndexForecast: (coords: Coords) => Promise<void>;
+    setActiveCityCoords: React.Dispatch<React.SetStateAction<Coords>>; // Add this line
+
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -25,11 +33,16 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
     const [forecast, setForecast] = useState<Forecast | null>(null);
     const [airQuality, setAirQuality] = useState<AirQuality | null>(null);
     const [fiveDayForecast, setFiveDayForecast] = useState<FiveDayForecast | null>(null);
-    const [uvIndexForecast, setUVIndexForecast] = useState<UVIndexForecast | null>(null);  // Added state for uvIndexForecast
-
-    const fetchForecast = async () => {
+    const [uvIndexForecast, setUVIndexForecast] = useState<UVIndexForecast | null>(null);
+    const [geoCodedList, setGeoCodedList] = useState(defaultStates);
+    const [inputValue, setInputValue] = useState<string>("");
+    const [activeCityCoords, setActiveCityCoords] = useState<Coords>({
+        lat: 51.752021,  // key-value pairs
+        lon: -1.257726,  // key-value pairs
+    });
+    const fetchForecast = async ({ lat, lon }: Coords) => {
         try {
-            const response = await axios.get("/api/weather");
+            const response = await axios.get(`/api/weather?lat=${lat}&lon=${lon}`);
             setForecast(response.data);
             console.log("Forecast response:", response.data);
         } catch (error) {
@@ -37,9 +50,9 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
         }
     };
 
-    const fetchAirQuality = async () => {
+    const fetchAirQuality = async ({ lat, lon }: Coords) => {
         try {
-            const response = await axios.get("/api/pollution");
+            const response = await axios.get(`/api/pollution?lat=${lat}&lon=${lon}`);
             setAirQuality(response.data);
             console.log("Air quality response:", response.data);
         } catch (error) {
@@ -47,9 +60,9 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
         }
     };
 
-    const fetchFiveDayForecast = async () => {
+    const fetchFiveDayForecast = async ({ lat, lon }: Coords) => {
         try {
-            const response = await axios.get("/api/fiveday");
+            const response = await axios.get(`/api/fiveday?lat=${lat}&lon=${lon}`);
             setFiveDayForecast(response.data);
             console.log("Five-day forecast response:", response.data);
         } catch (error) {
@@ -57,9 +70,9 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
         }
     };
 
-    const fetchUVIndexForecast = async () => {  // Corrected the endpoint to /api/uv
+    const fetchUVIndexForecast = async ({ lat, lon }: Coords) => {
         try {
-            const response = await axios.get("/api/uv");
+            const response = await axios.get(`/api/uv?lat=${lat}&lon=${lon}`);
             setUVIndexForecast(response.data);
             console.log("UV Index forecast response:", response.data);
         } catch (error) {
@@ -67,16 +80,54 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
         }
     };
 
+
+    const fetchGeoCodedList = async (search: string) => {
+        try {
+            const response = await axios.get(`/api/geocoded?search=${search}`);
+            setGeoCodedList(response.data);
+            console.log("Geo coded response:", response.data);
+        } catch (error) {
+            console.log("Error fetching Geo coded data:", error);
+        }
+    };
+
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputValue(e.target.value);
+        if (e.target.value === "") {
+            setGeoCodedList(defaultStates);
+        }
+    };
+
+
+
     useEffect(() => {
-        fetchForecast();
-        fetchAirQuality();
-        fetchFiveDayForecast();
-        fetchUVIndexForecast();  // Fetch the UV Index forecast on mount
-    }, []);
+
+        const debouncedFetch = debounce((search: string) => {
+            fetchGeoCodedList(search)
+        }, 500)
+
+        if (inputValue) {
+            debouncedFetch(inputValue);
+        }
+
+        return () => debouncedFetch.cancel();
+
+    }, [inputValue]);
+
+
+
+    useEffect(() => {
+        fetchForecast(activeCityCoords);
+        fetchAirQuality(activeCityCoords);
+        fetchFiveDayForecast(activeCityCoords);
+        fetchUVIndexForecast(activeCityCoords);
+        fetchGeoCodedList("liverpool")
+    }, [activeCityCoords]);
 
     return (
-        <GlobalContext.Provider value={{ forecast, airQuality, fiveDayForecast, uvIndexForecast }}>
-            <GlobalContextUpdate.Provider value={{ fetchForecast, fetchAirQuality, fetchFiveDayForecast, fetchUVIndexForecast }}>
+        <GlobalContext.Provider value={{ forecast, airQuality, fiveDayForecast, uvIndexForecast, geoCodedList, inputValue, handleInput }}>
+            <GlobalContextUpdate.Provider value={{ fetchForecast, fetchAirQuality, fetchFiveDayForecast, fetchUVIndexForecast,    setActiveCityCoords 
+ }}>
                 {children}
             </GlobalContextUpdate.Provider>
         </GlobalContext.Provider>

@@ -147,3 +147,17 @@ export interface UVIndexForecast {
 }
 
 
+export interface Location {
+    name: string;
+    country: string;
+    state: string;
+    lat: number;
+    lon: number;
+}
+
+export interface Coords {
+    lat: number;
+    lon: number;
+}
+
+
