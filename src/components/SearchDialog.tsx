@@ -21,9 +21,9 @@ const SearchDialog = () => {
                         className='border group inline-flex items-center justify-center text-sm font-medium hover:dark:bg-accent hover:bg-slate-100 ease-in-out duration-200'
                     >
                         <p className='text-sm text-muted-foreground group-hover:text-primary duration-200'>Search Here...</p>
-                        <div className='command bg-accent py-[2px] pl-[5px] pr-[7px] rounded-sm ml-[10rem] flex items-center gap-2'>
-                            <CommandIcon />
-                            <span className='text-[9px]'>F</span>
+                        <div className='command  py-[2px] pl-[5px] pr-[7px] rounded-sm ml-[10rem] flex items-center gap-2'>
+                            {/* <CommandIcon />
+                            <span className='text-[9px]'>F</span> */}
                         </div>
                     </Button>
                 </DialogTrigger>
@@ -32,7 +32,7 @@ const SearchDialog = () => {
                     <Command className='rounded-lg border shadow-md'>
                         <input
                             className="px-4 flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                            placeholder='Type a command or search...'
+                            placeholder='Search a location...'
                             value={inputValue}
                             onChangeCapture={handleInput}
                         />

@@ -31,7 +31,7 @@ export default function Home() {
   };
 
   return (
-    <main className="mx-4 lg:mx-8 xl:mx-24 2xl:mx-64 m-auto pb-48 ">
+    <main className="mx-4 lg:mx-8 xl:mx-24 2xl:mx-64 m-auto pb-48 cursor-default ">
       <Navbar />
       <div className="pb-4 flex flex-col gap-4 md:flex-row">
 
@@ -55,7 +55,7 @@ export default function Home() {
           </div>
           <div className="mapbox-container mt-4 flex gap-4">
 
-              <MapBox />
+            <MapBox />
 
             <div className="states flex flex-col gap-3 flex-1">
               <h2 className="flex items-center gap-2 font-medium">
