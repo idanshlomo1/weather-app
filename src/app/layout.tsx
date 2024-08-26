@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
 import { GlobalContextProvider } from "@/lib/globalContext";
+import Footer from "@/components/Footer";
 
 
 const fontSans = FontSans({
@@ -39,6 +40,7 @@ export default function RootLayout({
           <GlobalContextProvider>
 
             {children}
+            <Footer/>
           </GlobalContextProvider>
           <Toaster dir="rtl" position="top-center" richColors />
         </ThemeProvider>

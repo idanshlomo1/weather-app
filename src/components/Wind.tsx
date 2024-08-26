@@ -29,11 +29,13 @@ const Wind = () => {
     }
 
     return (
-        <div className='col-span-full sm:col-span-2 pt-6 px-4 h-48 border rounded-lg flex flex-col gap-3 shadow-sm dark:shadow-none'>
-            <h2 className='flex items-center gap-2 font-medium'>
+        <div
+            className="pt-6 pb-5 px-4 h-48 border rounded-lg flex 
+      flex-col gap-3 shadow-sm dark:shadow-none"
+        >            <h2 className='flex items-center gap-2 font-medium'>
                 <WindIcon size={15} /> Wind
             </h2>
-            <div className="compass relative flex items-center justify-center">
+            <div className="compass relative  flex items-center justify-center">
                 <div className="image relative">
                     <Image
                         src="/compass_body.svg"

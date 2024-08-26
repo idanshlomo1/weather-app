@@ -26,7 +26,7 @@ const Humidity = () => {
 
 
     return (
-        <div className='col-span-full sm:col-span-2 pt-6 px-4 h-48 border rounded-lg flex flex-col gap-8 shadow-sm dark:shadow-none'>
+        <div className="pt-6 pb-5 px-4 h-48 border rounded-lg flex flex-col gap-8 shadow-sm dark:shadow-none">
             <div className="top">
                 <h2 className='flex items-center gap-2 font-medium'>
                     <Droplets size={15} /> Humidity
