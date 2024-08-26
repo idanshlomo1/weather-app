@@ -1,3 +1,4 @@
+"use client"
 import AirPollution from "@/components/AirPollution";
 import DailyForecast from "@/components/DailyForecast";
 import FeelsLike from "@/components/FeelsLike";
@@ -13,14 +14,24 @@ import UvIndex from "@/components/UvIndex";
 import Visibility from "@/components/Visibility";
 import Wind from "@/components/Wind";
 import { defaultStates } from "@/lib/defaultStates";
+import { useGlobalContextUpdate } from "@/lib/globalContext";
+import { Coords } from "@/lib/types";
 import Image from "next/image";
 
 export default function Home() {
 
-  console.log("Hello from Home component!");
+  const { setActiveCityCoords } = useGlobalContextUpdate();
+
+  const getClickedCityCords = (coords: Coords) => {
+    setActiveCityCoords(coords);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   return (
-    <main className="mx-4 lg:mx-8 xl:mx-24 2xl:mx-64 m-auto pb-48">
+    <main className="mx-4 lg:mx-8 xl:mx-24 2xl:mx-64 m-auto pb-48 ">
       <Navbar />
       <div className="pb-4 flex flex-col gap-4 md:flex-row">
 
@@ -43,9 +54,9 @@ export default function Home() {
             <Pressure />
           </div>
           <div className="mapbox-container mt-4 flex gap-4">
-            <div>
+
               <MapBox />
-            </div>
+
             <div className="states flex flex-col gap-3 flex-1">
               <h2 className="flex items-center gap-2 font-medium">
                 Top Large Cities
@@ -56,10 +67,12 @@ export default function Home() {
                     return (
                       <div
                         key={index}
-                        className="border rounded-lg cursor-pointer shadow-sm dark:shadow-none"
+                        onClick={() => getClickedCityCords({ lat: state.lat, lon: state.lon })}
+                        className="border rounded-lg cursor-pointer shadow-sm dark:shadow-none hover:bg-accent duration-200"
                       >
                         <p className="px-6 py-4">
                           {state.name}
+
                         </p>
                       </div>
                     )

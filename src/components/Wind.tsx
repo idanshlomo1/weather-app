@@ -3,39 +3,30 @@ import { useGlobalContext } from '@/lib/globalContext';
 import { WindIcon } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react'
+import { Skeleton } from './ui/skeleton';
 
 const Wind = () => {
     const { forecast } = useGlobalContext();
 
-    console.log("wind forecast:", forecast); // Check if forecast is null or undefined
-
-    if (!forecast) {
-        console.log("Forecast is null or undefined");
-        return <div>Loading forecast...</div>;
-    }
-
-    if (!forecast.wind) {
-        console.log("Wind data is missing in the forecast");
-        return <div>Loading wind data...</div>;
+    if (!forecast || !forecast.wind) {
+        return (
+            <div className="pt-6 pb-5 px-4 h-48 border rounded-lg flex flex-col gap-3 shadow-sm dark:shadow-none">
+                <Skeleton className="h-6 w-1/4" /> {/* Heading skeleton */}
+                <Skeleton className="h-28 w-28 mx-auto" /> {/* Compass skeleton */}
+                <Skeleton className="h-6 w-1/4 mx-auto" /> {/* Wind speed skeleton */}
+            </div>
+        );
     }
 
     const windSpeed = forecast.wind.speed;
     const windDir = forecast.wind.deg;
 
-    // Check if wind speed and direction are valid
-    if (typeof windSpeed !== 'number' || typeof windDir !== 'number') {
-        console.log("Invalid wind data", windSpeed, windDir);
-        return <div>Loading wind details...</div>;
-    }
-
     return (
-        <div
-            className="pt-6 pb-5 px-4 h-48 border rounded-lg flex 
-      flex-col gap-3 shadow-sm dark:shadow-none"
-        >            <h2 className='flex items-center gap-2 font-medium'>
+        <div className="pt-6 pb-5 px-4 h-48 border rounded-lg flex flex-col gap-3 shadow-sm dark:shadow-none">
+            <h2 className='flex items-center gap-2 font-medium'>
                 <WindIcon size={15} /> Wind
             </h2>
-            <div className="compass relative  flex items-center justify-center">
+            <div className="compass relative flex items-center justify-center">
                 <div className="image relative">
                     <Image
                         src="/compass_body.svg"

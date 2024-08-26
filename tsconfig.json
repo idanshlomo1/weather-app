@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/context/globalContext.js", "src/lib/globalContext.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/context/globalContext.js", "src/lib/globalContext.tsx", "src/components/MapBox.js"],
   "exclude": ["node_modules"]
 }

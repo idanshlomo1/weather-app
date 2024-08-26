@@ -1,21 +1,20 @@
 "use client"
 import React, { useState } from 'react'
-import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
+import { Dialog, DialogContent, DialogTrigger, DialogClose } from './ui/dialog'
 import { Button } from './ui/button'
 import { CommandIcon } from 'lucide-react'
 import { useGlobalContext, useGlobalContextUpdate } from '@/lib/globalContext'
-import { Command, CommandInput } from './ui/command'
+import { Command, CommandGroup, CommandInput } from './ui/command'
+import { Input } from './ui/input'
 
 const SearchDialog = () => {
     const { geoCodedList = [], inputValue, handleInput } = useGlobalContext();
 
     const { setActiveCityCoords } = useGlobalContextUpdate()
 
-    const [hoveredIndex, setHoveredIndex] = useState<number>(0);
-
     return (
         <div className='search-btn'>
-            <Dialog >
+            <Dialog>
                 <DialogTrigger asChild>
                     <Button
                         variant={'outline'}
@@ -32,36 +31,38 @@ const SearchDialog = () => {
                 <DialogContent className='p-0'>
                     <Command className='rounded-lg border shadow-md'>
                         <input
+                            className="px-4 flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
                             placeholder='Type a command or search...'
                             value={inputValue}
                             onChangeCapture={handleInput}
                         />
+
                         <ul className='px-3 pb-2'>
                             <p className='p-2 text-sm text-muted-foreground'>
                                 Suggestions
                             </p>
-                            {geoCodedList.length === 0 || !geoCodedList && <p>No Results Found</p>}
+                            {geoCodedList.length === 0 && <p>No Results Found</p>}
 
                             {geoCodedList.map((item, i) => {
                                 const { country, name, state } = item;
                                 return (
-                                    <li
-                                        key={i}
-                                        onMouseEnter={() => setHoveredIndex(i)}
-                                        onClick={() => setActiveCityCoords({ lat: item.lat, lon: item.lon })} // Update the active city coordinates
-                                        className={`p-3 px-2 text-sm cursor-default rounded-sm ${hoveredIndex === i ? 'bg-accent' : ''}`}
-                                    >
-                                        <p className='text'>
-                                            {name}, {state ? state + "," : null} {country}
-                                        </p>
-                                    </li>
+                                    <DialogClose asChild key={i}>
+                                        <li
+                                            onClick={() => setActiveCityCoords({ lat: item.lat, lon: item.lon })} // Update the active city coordinates
+                                            className={`p-3 px-2 text-sm cursor-pointer rounded-sm hover:bg-accent`}
+                                        >
+                                            <p className='text'>
+                                                {name}, {state ? state + "," : null} {country}
+                                            </p>
+                                        </li>
+                                    </DialogClose>
                                 )
                             })}
                         </ul>
+
                     </Command>
                 </DialogContent>
             </Dialog>
-
         </div>
     );
 };

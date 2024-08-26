@@ -3,6 +3,7 @@ import { kelvinToCelsius, unixToDay } from '@/lib/convertions'
 import { useGlobalContext } from '@/lib/globalContext'
 import { CalendarDays } from 'lucide-react'
 import React from 'react'
+import { Skeleton } from './ui/skeleton'; // Import Skeleton from your UI library
 
 // Define the interface for dailyData
 interface DailyData {
@@ -17,7 +18,25 @@ const FiveDayForecast = () => {
     const { fiveDayForecast } = useGlobalContext();
 
     if (!fiveDayForecast || !fiveDayForecast.city || !fiveDayForecast.list) {
-        return <div>Loading...</div>;
+        // Return the skeleton while loading
+        return (
+            <div className='px-4 py-6 flex-1 border rounded-lg flex flex-col justify-between shadow-sm dark:shadow-none'>
+                <Skeleton className='h-6 w-1/3 mb-4' /> {/* City name skeleton */}
+                <div className='space-y-4'>
+                    {[...Array(5)].map((_, i) => (
+                        <div key={i} className='py-4 border-b-2'>
+                            <Skeleton className='h-6 w-1/4 mb-2' /> {/* Day skeleton */}
+                            <Skeleton className='h-4 w-1/2 mb-2' /> {/* Min/Max label skeleton */}
+                            <div className='flex items-center gap-4'>
+                                <Skeleton className='h-6 w-12' /> {/* Min temp skeleton */}
+                                <Skeleton className='h-2 flex-1 rounded-lg' /> {/* Progress bar skeleton */}
+                                <Skeleton className='h-6 w-12' /> {/* Max temp skeleton */}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
     }
 
     const { city, list } = fiveDayForecast;
