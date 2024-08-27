@@ -13,7 +13,7 @@ interface GlobalContextType {
     uvIndexForecast: UVIndexForecast | null;
     geoCodedList: typeof defaultStates;
     inputValue: string;  // Added inputValue to GlobalContextType
-    handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;  
+    handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
 
 }
 
@@ -126,8 +126,9 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
 
     return (
         <GlobalContext.Provider value={{ forecast, airQuality, fiveDayForecast, uvIndexForecast, geoCodedList, inputValue, handleInput }}>
-            <GlobalContextUpdate.Provider value={{ fetchForecast, fetchAirQuality, fetchFiveDayForecast, fetchUVIndexForecast,    setActiveCityCoords 
- }}>
+            <GlobalContextUpdate.Provider value={{
+                fetchForecast, fetchAirQuality, fetchFiveDayForecast, fetchUVIndexForecast, setActiveCityCoords
+            }}>
                 {children}
             </GlobalContextUpdate.Provider>
         </GlobalContext.Provider>

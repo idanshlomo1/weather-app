@@ -16,6 +16,9 @@ const fontSans = FontSans({
 export const metadata: Metadata = {
   title: "Weather Application",
   description: "Built using Next js",
+  icons: {
+    icon: '/is-logo.svg'
+  }
 };
 
 export default function RootLayout({
@@ -40,7 +43,7 @@ export default function RootLayout({
           <GlobalContextProvider>
 
             {children}
-            <Footer/>
+            <Footer />
           </GlobalContextProvider>
           <Toaster dir="rtl" position="top-center" richColors />
         </ThemeProvider>
