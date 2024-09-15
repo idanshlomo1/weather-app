@@ -16,7 +16,6 @@ import Wind from "@/components/Wind";
 import { defaultStates } from "@/lib/defaultStates";
 import { useGlobalContextUpdate } from "@/lib/globalContext";
 import { Coords } from "@/lib/types";
-import Image from "next/image";
 
 export default function Home() {
 
@@ -24,10 +23,8 @@ export default function Home() {
 
   const getClickedCityCords = (coords: Coords) => {
     setActiveCityCoords(coords);
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+
+  
   };
 
   return (
@@ -82,8 +79,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-
     </main>
   );
 }
