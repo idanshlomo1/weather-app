@@ -1,10 +1,9 @@
-"use client"
+"use client";
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import axios from "axios";
 import { AirQuality, Forecast, FiveDayForecast, UVIndexForecast, Coords } from '@/lib/types';  // Added UVIndexForecast type
 import { defaultStates } from "./defaultStates";
-import { debounce } from "lodash"
 
 interface GlobalContextType {
     forecast: Forecast | null;
@@ -14,7 +13,6 @@ interface GlobalContextType {
     geoCodedList: typeof defaultStates;
     inputValue: string;  // Added inputValue to GlobalContextType
     handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
-
 }
 
 interface GlobalContextUpdateType {
@@ -23,7 +21,6 @@ interface GlobalContextUpdateType {
     fetchFiveDayForecast: (coords: Coords) => Promise<void>;
     fetchUVIndexForecast: (coords: Coords) => Promise<void>;
     setActiveCityCoords: React.Dispatch<React.SetStateAction<Coords>>; // Add this line
-
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -37,9 +34,10 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
     const [geoCodedList, setGeoCodedList] = useState(defaultStates);
     const [inputValue, setInputValue] = useState<string>("");
     const [activeCityCoords, setActiveCityCoords] = useState<Coords>({
-        lat: 51.752021,  // key-value pairs
-        lon: -1.257726,  // key-value pairs
+        lat: 51.752021,
+        lon: -1.257726,
     });
+
     const fetchForecast = async ({ lat, lon }: Coords) => {
         try {
             const response = await axios.get(`/api/weather?lat=${lat}&lon=${lon}`);
@@ -80,7 +78,6 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
         }
     };
 
-
     const fetchGeoCodedList = async (search: string) => {
         try {
             const response = await axios.get(`/api/geocoded?search=${search}`);
@@ -98,30 +95,35 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
         }
     };
 
-
+    // Custom debounce function using setTimeout and clearTimeout
+    const debounce = (func: Function, delay: number) => {
+        let timeout: NodeJS.Timeout;
+        return (...args: any) => {
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), delay);
+        };
+    };
 
     useEffect(() => {
-
         const debouncedFetch = debounce((search: string) => {
-            fetchGeoCodedList(search)
-        }, 500)
+            fetchGeoCodedList(search);
+        }, 500);
 
         if (inputValue) {
             debouncedFetch(inputValue);
         }
 
-        return () => debouncedFetch.cancel();
-
+        return () => {
+            // No need for cleanup for custom debounce in this case
+        };
     }, [inputValue]);
-
-
 
     useEffect(() => {
         fetchForecast(activeCityCoords);
         fetchAirQuality(activeCityCoords);
         fetchFiveDayForecast(activeCityCoords);
         fetchUVIndexForecast(activeCityCoords);
-        fetchGeoCodedList("liverpool")
+        fetchGeoCodedList("liverpool");
     }, [activeCityCoords]);
 
     return (
