@@ -9,7 +9,32 @@ import { Skeleton } from './ui/skeleton';
 const Temperature: React.FC = () => {
     const { forecast } = useGlobalContext();
 
-    // Ensure the forecast and its required properties are available
+    // State for time and day
+    const [localTime, setLocalTime] = useState<string>("");
+    const [currentDay, setCurrentDay] = useState<string>("");
+
+    // Initialize time and day immediately on component mount
+    useEffect(() => {
+        if (forecast?.timezone) {
+            const localMoment = moment().utcOffset(forecast.timezone / 60);
+
+            // Initial time and day setting
+            setLocalTime(localMoment.format("HH:mm:ss"));
+            setCurrentDay(localMoment.format("dddd"));
+
+            // Start interval for real-time updates
+            const interval = setInterval(() => {
+                const updatedMoment = moment().utcOffset(forecast.timezone / 60);
+                setLocalTime(updatedMoment.format("HH:mm:ss"));
+                setCurrentDay(updatedMoment.format("dddd"));
+            }, 1000);
+
+            // Cleanup interval on component unmount
+            return () => clearInterval(interval);
+        }
+    }, [forecast?.timezone]);
+
+    // Early return if forecast is not available
     if (!forecast || !forecast.main || !forecast.weather || forecast.weather.length === 0) {
         return (
             <div className="px-4 py-6 border rounded-lg flex flex-col justify-between shadow-sm dark:shadow-none">
@@ -21,39 +46,13 @@ const Temperature: React.FC = () => {
                 <Skeleton className="w-1/2 h-6 mb-4" /> {/* Weather description */}
                 <Skeleton className="w-full h-6" /> {/* Low/High temperature */}
             </div>
-
-        )
+        );
     }
 
     const { main, timezone, name, weather } = forecast;
     const temp = kelvinToCelsius(main?.temp);
     const minTemp = kelvinToCelsius(main?.temp_min);
     const maxTemp = kelvinToCelsius(main?.temp_max);
-
-    // State
-    const [localTime, setLocalTime] = useState<string>("");
-    const [currentDay, setCurrentDay] = useState<string>("");
-
-    // Initialize time and day immediately on component mount
-    useEffect(() => {
-        if (timezone) {
-            const localMoment = moment().utcOffset(timezone / 60);
-
-            // Initial time and day setting
-            setLocalTime(localMoment.format("HH:mm:ss"));
-            setCurrentDay(localMoment.format("dddd"));
-
-            // Start interval for real-time updates
-            const interval = setInterval(() => {
-                const updatedMoment = moment().utcOffset(timezone / 60);
-                setLocalTime(updatedMoment.format("HH:mm:ss"));
-                setCurrentDay(updatedMoment.format("dddd"));
-            }, 1000);
-
-            // Cleanup interval on component unmount
-            return () => clearInterval(interval);
-        }
-    }, [timezone]);
 
     const getIcon = () => {
         const weatherMain = weather[0]?.main || "Clear";

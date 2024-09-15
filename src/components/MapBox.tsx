@@ -38,7 +38,7 @@ const MapBox: React.FC = () => {
     console.log("Active City Coordinates:", activeCityCoords);
 
     return (
-        <div className='flex-1 basis-1/2 border rounded-lg p-4'>
+        <div className='flex-1 basis-1/2 border rounded-lg p-4 z-0'>
             <MapContainer
                 center={[activeCityCoords.lat, activeCityCoords.lon]}
                 zoom={13}
