@@ -15,11 +15,37 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: "Weather Application",
-  description: "Built using Next js",
+  description: "Get real-time weather updates with our Weather App built using Next.js.",
   icons: {
-    icon: '/is-logo.svg'
-  }
+    icon: "/is-logo.svg",
+  },
+  openGraph: {
+    title: "Weather Application",
+    description: "Real-time weather updates and forecasts built using Next.js.",
+    url: process.env.NEXT_PUBLIC_URL || "https://weather-app-is.vercel.app/",
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_URL || "https://weather-app-is.vercel.app"}/is-logo.svg`,
+        width: 1200,
+        height: 630,
+        alt: "Weather Application",
+      },
+    ],
+    siteName: "Weather App",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Weather Application",
+    description: "Real-time weather updates and forecasts built using Next.js.",
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_URL || "https://weather-app-is.vercel.app"}/is-logo.svg`,
+        alt: "Weather Application",
+      },
+    ],
+  },
 };
+
 
 export default function RootLayout({
   children,
