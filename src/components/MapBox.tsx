@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -35,7 +34,6 @@ const MapBox: React.FC = () => {
     }
 
     const activeCityCoords = forecast.coord;
-    console.log("Active City Coordinates:", activeCityCoords);
 
     return (
         <div className='flex-1 basis-1/2 border rounded-lg p-4 z-0'>
@@ -50,7 +48,6 @@ const MapBox: React.FC = () => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                Uncomment to re-enable FlyToActiveCity
                 <FlyToActiveCity activeCityCoords={activeCityCoords} />
             </MapContainer>
         </div>
