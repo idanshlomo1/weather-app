@@ -1,57 +1,74 @@
-import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import { useGlobalContext } from '@/lib/globalContext';
-import { Coords } from '@/lib/types';
-import { Skeleton } from './ui/skeleton';
+'use client'
 
-const FlyToActiveCity: React.FC<{ activeCityCoords: Coords }> = ({ activeCityCoords }) => {
-    const map = useMap();
+import React, { useCallback, useState, useEffect } from 'react'
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
+import { useGlobalContext, useGlobalContextUpdate } from '@/lib/globalContext'
+import { Coords } from '@/lib/types'
+import { Skeleton } from '@/components/ui/skeleton'
 
-    useEffect(() => {
-        if (activeCityCoords) {
-            console.log("Flying to coordinates:", activeCityCoords);
-            const zoomLevel = 13;
-            const flyToOptions = {
-                duration: 1.5,
-            };
-            map.flyTo([activeCityCoords.lat, activeCityCoords.lon], zoomLevel, flyToOptions);
-        }
-    }, [activeCityCoords, map]);
-
-    return null;
-};
-
-const MapBox: React.FC = () => {
-    const { forecast } = useGlobalContext();
-
-    if (!forecast || !forecast.coord) {
-        return (
-            <div className='flex-1 basis-1/2 border rounded-lg p-4'>
-                <Skeleton className='rounded-lg' style={{ height: "500px", width: "100%" }} /> {/* Map skeleton */}
-            </div>
-        );
-    }
-
-    const activeCityCoords = forecast.coord;
-
-    return (
-        <div className='flex-1 basis-1/2 border rounded-lg p-4 z-0'>
-            <MapContainer
-                center={[activeCityCoords.lat, activeCityCoords.lon]}
-                zoom={13}
-                scrollWheelZoom={false}
-                className='rounded-lg'
-                style={{ height: "500px", width: "100%" }}
-            >
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <FlyToActiveCity activeCityCoords={activeCityCoords} />
-            </MapContainer>
-        </div>
-    );
+const containerStyle = {
+  width: '100%',
+  height: '500px'
 }
 
-export default MapBox;
+export default function MapBox() {
+  const { forecast } = useGlobalContext()
+  const { setActiveCityCoords } = useGlobalContextUpdate()
+  const [map, setMap] = useState<google.maps.Map | null>(null)
+
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""
+  })
+
+  const center: Coords = forecast?.coord ? {
+    lat: forecast.coord.lat,
+    lon: forecast.coord.lon
+  } : { lat: 51.752021, lon: -1.257726 } // Default to Oxford, UK if no forecast
+
+  const onLoad = useCallback((map: google.maps.Map) => {
+    map.setCenter({ lat: center.lat, lng: center.lon })
+    setMap(map)
+  }, [center])
+
+  const onUnmount = useCallback(() => {
+    setMap(null)
+  }, [])
+
+  useEffect(() => {
+    if (map && forecast?.coord) {
+      map.panTo({ lat: forecast.coord.lat, lng: forecast.coord.lon })
+    }
+  }, [map, forecast])
+
+  const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
+    if (e.latLng) {
+      const lat = e.latLng.lat()
+      const lon = e.latLng.lng()
+      setActiveCityCoords({ lat, lon })
+    }
+  }, [setActiveCityCoords])
+
+  if (!isLoaded) {
+    return (
+      <div className='flex-1 basis-1/2 border rounded-lg p-4'>
+        <Skeleton className='rounded-lg' style={{ height: "500px", width: "100%" }} />
+      </div>
+    )
+  }
+
+  return (
+    <div className='flex-1 basis-1/2 border rounded-lg p-4 z-0'>
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={{ lat: center.lat, lng: center.lon }}
+        zoom={10}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+        onClick={handleMapClick}
+      >
+        <Marker position={{ lat: center.lat, lng: center.lon }} />
+      </GoogleMap>
+    </div>
+  )
+}

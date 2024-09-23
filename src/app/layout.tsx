@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { Montserrat as FontSans } from "next/font/google"
 import "./globals.css";
 import { cn } from "@/lib/utils"
 import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
 import { GlobalContextProvider } from "@/lib/globalContext";
 import Footer from "@/components/Footer";
+import { Montserrat } from "next/font/google"; // No 'as', direct import
 
 
-const fontSans = FontSans({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-sans",
-})
+});
+
 
 export const metadata: Metadata = {
   title: "Weather Application",
@@ -29,10 +29,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={cn(
-          " font-sans antialiased",
-          fontSans.variable
-        )}
+        className={cn(`antialiased ${montserrat.className} `)}
+
       >
         <ThemeProvider
           attribute="class"

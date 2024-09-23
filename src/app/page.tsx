@@ -24,7 +24,7 @@ export default function Home() {
   const getClickedCityCords = (coords: Coords) => {
     setActiveCityCoords(coords);
 
-  
+
   };
 
   return (
@@ -52,7 +52,7 @@ export default function Home() {
           </div>
           <div className="mapbox-container mt-4 flex gap-4">
 
-            {/* <MapBox /> */}
+            <MapBox />
 
             <div className="states flex flex-col gap-3 flex-1">
               <h2 className="flex items-center gap-2 font-medium">
